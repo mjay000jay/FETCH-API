@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple Carts</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #eef1f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 2rem;
+    }
+
+    #cartContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .cart-card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      width: 340px;
+      padding: 20px;
+      transition: 0.3s ease;
+    }
+
+    .cart-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .cart-info {
+      margin-bottom: 12px;
+      color: #444;
+      font-size: 15px;
+    }
+
+    .cart-info span {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .product-list {
+      margin-top: 10px;
+    }
+
+    .product-item {
+      background: #f7f9fc;
+      border-left: 4px solid #3498db;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #333;
+      display: flex;
+      align-items: center;
+    }
+
+    .product-item img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    .total {
+      font-weight: bold;
+      color: #27ae60;
+      margin-top: 15px;
+      font-size: 16px;
+    }
+
+    .error {
+      text-align: center;
+      color: red;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Cart List</h2>
+  <div id="cartContainer"></div>
+
+  <script>
+    fetch('https://dummyjson.com/carts')
+      .then(response => response.json())
+      .then(data => {
+        const carts = data.carts;
+        const container = document.getElementById('cartContainer');
+
+        carts.forEach(cart => {
+          const cartDiv = document.createElement('div');
+          cartDiv.className = 'cart-card';
+
+          let productsHTML = '';
+          cart.products.forEach(product => {
+            productsHTML += `
+              <div class="product-item">
+                <img src="${product.thumbnail}" alt="${product.title}">
+                <div>
+                  <div><strong>${product.title}</strong></div>
+                  <div>(x${product.quantity}) - $${product.price} each</div>
+                </div>
+              </div>
+            `;
+          });
+
+          cartDiv.innerHTML = `
+            <div class="cart-info">
+              <span>Cart ID:</span> ${cart.id}<br>
+              <span>User ID:</span> ${cart.userId}
+            </div>
+            <div class="product-list">${productsHTML}</div>
+            <div class="total">Total: $${cart.total}</div>
+          `;
+
+          container.appendChild(cartDiv);
+        });
+      })
+      .catch(error => {
+        console.error('Fetch error:', error);
+        document.getElementById('cartContainer').innerHTML =
+          '<div class="error">Failed to load cart data. Please try again later.</div>';
+      });
+  </script>
+
+</body>
+</html>
